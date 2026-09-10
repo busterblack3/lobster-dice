@@ -125,7 +125,10 @@
   #pile{font-size:clamp(52px,13vh,84px);font-weight:800;line-height:.92;letter-spacing:-.045em;}
   #pile.risk{color:var(--lob);}
   #pilelbl{font-size:12px;font-weight:700;letter-spacing:.14em;text-transform:uppercase;color:var(--muted);}
-  #banner{font-size:15px;font-weight:600;text-align:center;max-width:34ch;line-height:1.4;min-height:42px;color:var(--cream-dim);}
+  /* Fixed height so a two-line message can't change the stack height and shift the dice.
+     Width is wide enough that messages normally stay on one line anyway. */
+  #banner{font-size:15px;font-weight:600;text-align:center;max-width:46ch;line-height:1.4;min-height:64px;
+    display:flex;flex-direction:column;justify-content:center;color:var(--cream-dim);}
   #banner b{color:var(--cream);font-weight:700;}
   #banner .bad{color:var(--lob);font-weight:700;}
   #banner small{display:block;font-size:13px;font-weight:500;color:var(--muted);margin-top:2px;}
