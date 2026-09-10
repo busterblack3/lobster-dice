@@ -1,0 +1,565 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, maximum-scale=1, user-scalable=no">
+<title>Lobster Dice — Pass &amp; Play</title>
+<!-- Link-preview (Open Graph) tags so texting the URL shows a rich card -->
+<meta property="og:type" content="website">
+<meta property="og:site_name" content="Lobster Dice">
+<meta property="og:title" content="Lobster Dice — Pass &amp; Play">
+<meta property="og:description" content="The claw-some dice game: race to 100, dodge the lobsters, and bank 21 to get in. Pass &amp; play with friends!">
+<meta property="og:url" content="https://lobster-dice.com/">
+<meta property="og:image" content="https://lobster-dice.com/logo.jpg">
+<meta property="og:image:width" content="1024">
+<meta property="og:image:height" content="1024">
+<meta name="twitter:card" content="summary_large_image">
+<meta name="twitter:title" content="Lobster Dice — Pass &amp; Play">
+<meta name="twitter:description" content="Race to 100, dodge the lobsters, bank 21 to get in. Pass &amp; play!">
+<meta name="twitter:image" content="https://lobster-dice.com/logo.jpg">
+<link rel="icon" type="image/jpeg" href="logo.jpg">
+<style>
+  *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent;}
+  html,body{height:100%;}
+  body{font-family:Georgia,'Times New Roman',serif;color:#f8efdc;
+    background:radial-gradient(circle at 50% 12%,#a06a36 0%,#7a4e24 55%,#543614 100%) fixed;
+    min-height:100%;-webkit-user-select:none;user-select:none;display:flex;flex-direction:column;}
+  header{text-align:center;padding:14px 12px 2px;}
+  header h1{font-size:clamp(1.7rem,7vw,2.7rem);letter-spacing:1px;text-shadow:0 2px 5px rgba(0,0,0,.5);}
+  header .lob{color:#ef5340;}
+  header .tag{font-size:13px;font-style:italic;color:#e0d2b2;margin-top:2px;}
+
+  .btn{display:block;text-align:center;padding:14px;font-size:17px;font-family:inherit;font-weight:bold;
+    border-radius:10px;border:none;cursor:pointer;width:100%;background:#e8b94e;color:#3a2a08;box-shadow:0 4px 0 #a9822c;}
+  .btn:active{transform:translateY(2px);box-shadow:0 2px 0 #a9822c;}
+  .btn:disabled{opacity:.45;cursor:not-allowed;transform:none;}
+  .btn.green{background:#7faf68;box-shadow:0 4px 0 #4f7a3a;color:#1e2f12;}
+  .btn.blue{background:#4b90bf;box-shadow:0 4px 0 #2e6384;color:#0d2436;}
+  .btn.wideauto{width:auto;min-width:180px;margin:0 auto;padding:15px 26px;}
+
+  /* ----- setup ----- */
+  #setup{flex:1;overflow-y:auto;padding:12px;display:flex;flex-direction:column;align-items:center;}
+  .panel{background:rgba(0,0,0,.40);border:1px solid rgba(255,255,255,.13);border-radius:16px;padding:16px 18px;
+    margin:0 auto 14px;width:min(460px,100%);}
+  .panel h2{color:#e8b94e;font-size:1.2rem;margin-bottom:6px;text-align:center;}
+  label.f{display:block;font-size:13px;color:#e6d8ba;margin:10px 0 3px;}
+  input[type=number],input[type=text]{padding:9px;font-size:16px;border-radius:8px;border:1px solid #caa;
+    background:#fff8ea;color:#2a2114;font-family:inherit;text-align:center;width:100%;}
+  .prow{display:flex;align-items:center;gap:8px;margin:6px 0;}
+  .prow .dot{width:26px;height:26px;border-radius:50%;flex:0 0 26px;color:#fff;display:flex;align-items:center;
+    justify-content:center;font-weight:bold;font-size:13px;border:2px solid rgba(255,255,255,.7);}
+  .prow input{flex:1;text-align:left;}
+  .prow .del{background:none;border:none;color:#ffb4a7;font-size:20px;cursor:pointer;line-height:1;}
+  .prow .who{flex:0 0 auto;font-size:15px;line-height:1;background:rgba(255,255,255,.12);border:1px solid rgba(255,255,255,.35);
+    color:#f8efdc;border-radius:8px;padding:6px 9px;cursor:pointer;}
+  .prow .who.cpu{background:#7fb069;border-color:#a9d69a;color:#12220c;}
+  .pcpu{font-size:11px;color:#bfe3b0;}
+  .addrow{display:flex;gap:8px;margin-top:8px;}
+  .addrow input{flex:1;}
+  .addrow .btn{width:44px;flex:0 0 44px;padding:0;background:#5c8a5e;box-shadow:0 3px 0 #3b5c3d;font-size:20px;}
+  .rules{text-align:left;font-size:13px;line-height:1.5;color:#ece0c4;}
+  .rules li{margin:6px 0 6px 15px;}
+  .rules b{color:#e8b94e;}
+  .rules .dyn{color:#ffd9cf;}
+
+  /* ----- game ----- */
+  #game{display:none;flex:1;flex-direction:column;padding:8px 10px 10px;max-width:760px;width:100%;margin:0 auto;}
+  #game.active{display:flex;}
+  #board{display:flex;gap:7px;flex-wrap:wrap;justify-content:center;}
+  .pcard{background:rgba(0,0,0,.32);border:2px solid rgba(255,255,255,.13);border-radius:11px;padding:6px 8px;
+    min-width:80px;flex:1 1 90px;max-width:175px;text-align:center;}
+  .pcard.turn{background:rgba(232,185,78,.16);border-color:#e8b94e;box-shadow:0 0 12px rgba(232,185,78,.35);}
+  .pcard .nm{font-weight:bold;font-size:14px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis;line-height:1.1;}
+  .pcard .sc{font-size:24px;font-weight:bold;line-height:1.1;}
+  .pcard .tp{font-size:11px;color:#e8b94e;font-style:italic;min-height:14px;}
+  .pcard .offtag{display:inline-block;font-size:9px;background:#6b1208;color:#ffd9cf;border:1px solid #df7a63;
+    padding:0 6px;border-radius:8px;margin-top:1px;}
+
+  #stage{flex:1;display:flex;flex-direction:column;align-items:center;justify-content:center;}
+  #bannerbox{width:100%;max-width:560px;text-align:center;min-height:56px;}
+  #banner{font-size:clamp(1.2rem,5.5vw,1.7rem);font-weight:bold;line-height:1.2;text-shadow:0 2px 3px rgba(0,0,0,.6);}
+  #banner small{display:block;font-size:13px;font-weight:normal;font-style:italic;color:#e6d8ba;margin-top:2px;}
+  #banner.shake{animation:shake .4s ease-in-out;}
+  @keyframes shake{0%,100%{transform:translateX(0)}20%{transform:translateX(-8px)}40%{transform:translateX(8px)}60%{transform:translateX(-6px)}80%{transform:translateX(6px)}}
+  .dicewrap{display:flex;gap:clamp(12px,9vw,40px);align-items:center;margin:14px 0;min-height:120px;}
+  .diebox{width:clamp(80px,28vw,130px);}
+  .diebox svg{width:100%;height:auto;display:block;filter:drop-shadow(0 6px 5px rgba(0,0,0,.35));}
+  .dicewrap.gone{display:none;}
+
+  #controls{display:flex;gap:10px;justify-content:center;width:100%;max-width:520px;margin-top:4px;}
+  #controls .btn{width:auto;flex:1;max-width:210px;padding:17px 10px;font-size:clamp(1.15rem,5.5vw,1.5rem);}
+  .ctrl-hide{display:none!important;}
+  #nextbar{display:none;justify-content:center;width:100%;max-width:520px;margin-top:16px;}
+  #nextbar.show{display:flex;}
+
+  .logpanel{width:100%;max-width:560px;margin:12px auto 0;}
+  .logpanel .bar{background:none;border:none;color:#e0d2b2;font-size:12px;cursor:pointer;text-decoration:underline;
+    display:block;margin:0 auto;font-family:inherit;}
+  #history{max-height:130px;overflow-y:auto;font-size:12px;color:#e6d8ba;background:rgba(0,0,0,.25);
+    border-radius:8px;padding:6px 10px;margin-top:4px;}
+  #history.gone{display:none;}
+  .hl-turn{color:#e8b94e;font-weight:bold;}
+  .hl-bad{color:#ff9b8a;}
+  .hl-win{color:#ffe27a;font-weight:bold;}
+  .hl-sm{color:#b9d4a8;}
+
+  /* winner overlay */
+  #winner{display:none;position:fixed;inset:0;background:rgba(0,0,0,.76);z-index:50;align-items:center;justify-content:center;}
+  #winner.on{display:flex;}
+  .wininner{background:linear-gradient(160deg,#f8efdc,#e3c468);color:#3a2a08;border-radius:20px;padding:30px 26px;
+    width:min(420px,90vw);text-align:center;box-shadow:0 12px 50px rgba(0,0,0,.6);}
+  .wininner .trophy{font-size:3.2rem;}
+  .wininner h2{font-size:2.1rem;margin:6px 0;}
+  .wininner p{font-size:15px;margin-bottom:14px;}
+
+  @keyframes rattle{0%{transform:rotate(0)}25%{transform:rotate(-16deg) translate(-7px,6px)}
+    50%{transform:rotate(16deg) translate(7px,-5px)}75%{transform:rotate(-11deg) translate(-5px,-4px)}100%{transform:rotate(8deg)}}
+  @keyframes pop{0%{transform:scale(1.3) rotate(12deg);opacity:.3}100%{transform:scale(1) rotate(0);opacity:1}}
+</style>
+</head>
+<body>
+
+<header>
+  <h1><span class="lob">🦞</span>Lobster Dice<span class="lob">🦞</span></h1>
+  <div class="tag">pass &amp; play · race to 100</div>
+</header>
+
+<!-- ============ SETUP ============ -->
+<div id="setup">
+  <div class="panel">
+    <h2>Set up the game</h2>
+    <label class="f">Target score to win</label>
+    <input type="number" id="tarScore" value="100" min="50" max="500" step="10">
+    <label class="f">Entry — points banked on ONE turn to get in</label>
+    <input type="number" id="entScore" value="21" min="10" max="100" step="1">
+    <label class="f" style="margin-top:14px">Players</label>
+    <div class="rulesrow" style="margin:0 0 8px;font-size:12px;color:#c9b48d;">Tap 👤/🤖 to switch a player between human and computer.</div>
+    <div id="plist"></div>
+    <div class="addrow">
+      <input type="text" id="newName" placeholder="Add player name…" maxlength="14">
+      <button class="btn" id="btnAdd">+</button>
+    </div>
+    <button class="btn" id="btnStart" style="margin-top:14px">🦞 Start the game</button>
+  </div>
+  <div class="panel">
+    <h2>How we play</h2>
+    <ul class="rules" id="rulesList">
+      <li>On your turn, roll the two dice as often as you like. Safe rolls <b>add to your turn pile</b>.</li>
+      <li><b>Roll one 🦞 (a 1):</b> your turn ends and you <b>lose the turn pile</b>. Banked points survive.</li>
+      <li><b>Roll two 🦞🦞:</b> turn ends <b>and your whole score goes to 0</b>.</li>
+      <li><b>Doubles</b> (not both 🦞): pips count but you <b>must roll again</b> — banking locked.</li>
+      <li><b>Getting in:</b> score stays 0 until you bank <span class="dyn entryN">21</span>+ on a single turn. Then it counts.</li>
+      <li><b>Win:</b> first to reach or pass the <span class="dyn targetN">100</span> by banking wins.</li>
+    </ul>
+  </div>
+</div>
+
+<!-- ============ GAME ============ -->
+<div id="game">
+  <div id="board"></div>
+  <div id="stage">
+    <div id="bannerbox"><div id="banner"></div></div>
+    <div class="dicewrap" id="diceArea">
+      <div class="diebox" id="d1"></div>
+      <div class="diebox" id="d2"></div>
+    </div>
+    <div id="controls">
+      <button class="btn" id="rollBtn">🎲 Roll</button>
+      <button class="btn green" id="bankBtn">💰 Bank</button>
+    </div>
+    <div id="nextbar"><button class="btn blue wideauto" id="nextBtn">Next player →</button></div>
+  </div>
+  <div class="logpanel">
+    <button class="bar" id="logBar">▸ roll history</button>
+    <div id="history" class="gone"></div>
+  </div>
+</div>
+
+<!-- winner -->
+<div id="winner"><div class="wininner">
+  <div class="trophy">🦞🏆🦞</div>
+  <h2 id="winName"></h2>
+  <p id="winScore"></p>
+  <button class="btn" id="againBtn">Play again</button>
+</div></div>
+
+<script>
+/* =========================================================
+   Lobster Dice — tested pure rules engine + thin UI adapter
+   Engine identical to /engine.js (unit-tested in Node).
+   ========================================================= */
+var LobsterPig = (function BP_ENGINE(global){
+  'use strict';
+  function newGame(opts){
+    opts=opts||{};
+    var names=(opts.names||[]).slice();
+    var colors=opts.colors||['#e0524f','#4290d4','#66b15e','#b57ee0','#dfa33c','#38b9b4','#dd6f95','#9aa03a','#e06a3c','#71c7e0'];
+    return {
+      target: opts.target||100,
+      entry:  opts.entry||21,
+      ps: names.map(function(n,i){
+        return {name:n,color:colors[i%colors.length],score:0,gotIn:false};
+      }),
+      mode:'turn', cur:0, pile:0, forced:false, winner:null, log:[]
+    };
+  }
+  function roll(g,a,b){
+    g.forced=false;
+    var p=g.ps[g.cur], sum=a+b;
+    var bothLob=(a===1&&b===1), oneLob=(a===1||b===1)&&!bothLob, dbl=(a===b)&&!bothLob;
+    if(bothLob){
+      var wiped=p.score;
+      p.score=0; p.gotIn=false; g.pile=0; g.mode='over';
+      return {type:'doubleLob',message:'🦞🦞 DOUBLE LOBSTER! '+p.name+"'s "+wiped+' points are GONE — back to 0!',
+        sub:'roll over',lost:wiped};
+    }
+    if(oneLob){
+      var lostPile=g.pile; g.pile=0; g.mode='over';
+      var m = p.gotIn? ('🦞 LOBSTER! '+p.name+' rolled a 1 — lost '+lostPile+' unbanked pt'+(lostPile===1?'':'s')+'.')
+                    : ('🦞 LOBSTER! '+p.name+' rolled a 1 — lost '+lostPile+', still not in the game.');
+      return {type:'lob',message:m,sub:'turn over',lost:lostPile};
+    }
+    if(dbl){
+      g.pile+=sum; g.forced=true;
+      return {type:'doubles',message:'DOUBLES '+a+'+'+b+'! +'+sum+' (pile '+g.pile+')',
+        sub:'doubles — press Roll again (banking locked)',added:sum};
+    }
+    g.pile+=sum;
+    return {type:'safe',message:'Safe '+a+'+'+b+' = +'+sum+' (pile '+g.pile+')',
+      sub:p.gotIn?'':('not in yet — need '+g.entry+' on one turn (have '+g.pile+')'),added:sum};
+  }
+  function canBank(g){
+    if(g.forced)return {ok:false,reason:'forced'};
+    if(g.pile<=0)return {ok:false,reason:'empty'};
+    var p=g.ps[g.cur];
+    if(!p.gotIn && g.pile<g.entry) {
+      return {ok:false,reason:'entry',message:'You need '+g.entry+' on ONE turn to get in — you have '+g.pile+'. Keep rolling.'};
+    }
+    return {ok:true};
+  }
+  function bank(g){
+    var c=canBank(g);
+    if(!c.ok){
+      if(c.reason==='forced') return {type:'refused',message:'Doubles — you must roll again before banking.'};
+      if(c.reason==='empty') return {type:'refused',message:'Nothing to bank yet — roll first!'};
+      return {type:'refused',message:c.message};
+    }
+    var p=g.ps[g.cur]; var wasIn=p.gotIn;
+    p.gotIn=true; var gained=g.pile; p.score+=gained;
+    g.pile=0; g.forced=false;
+    if(p.score>=g.target){
+      g.winner=p; g.mode='over';
+      return {type:'win',message:p.name+' crosses '+g.target+' with '+p.score+'! 🏆 🏆 🏆',score:p.score,gained:gained};
+    }
+    if(!wasIn) return {type:'bank',gotIn:true,gained:gained,score:p.score,
+      message:p.name+' is IN the game (banked '+gained+' ≥ '+g.entry+')! Score '+p.score+'.'};
+    return {type:'bank',gotIn:false,gained:gained,score:p.score,
+      message:p.name+' banks '+gained+' → total '+p.score+'.'};
+  }
+  function endTurn(g){
+    g.cur=(g.cur+1)%g.ps.length; g.pile=0; g.forced=false; g.mode='turn';
+    return g.ps[g.cur];
+  }
+  global.LobsterPig={newGame:newGame,roll:roll,bank:bank,canBank:canBank,endTurn:endTurn};
+  return {newGame:newGame,roll:roll,bank:bank,canBank:canBank,endTurn:endTurn};
+})(window);
+
+/* =========================================================
+   COLORS & dice SVG
+   ========================================================= */
+var P={diceBg:'#fdfdf4',edge:'#d8cba6',ink:'#201c15',lob:'#ef5340',lobDark:'#b72c1f'};
+function dieSVG(v){
+  var pad=50;
+  function pip(x,y){return '<circle cx="'+x+'" cy="'+y+'" r="20" fill="'+P.ink+'"/>';}
+  var content='';
+  switch(v){
+    case 1:
+      content='<g transform="translate(100,100)">'
+        +'<path d="M-6 -58 C -14 -82 -40 -96 -56 -84 C -56 -60 -30 -52 -15 -46 Z" fill="'+P.lob+'" stroke="'+P.lobDark+'" stroke-width="2.5"/>'
+        +'<path d="M6 -58 C 14 -82 40 -96 56 -84 C 56 -60 30 -52 15 -46 Z" fill="'+P.lob+'" stroke="'+P.lobDark+'" stroke-width="2.5"/>'
+        +'<g fill="'+P.ink+'"><circle cx="-20" cy="-62" r="3.6"/><circle cx="20" cy="-62" r="3.6"/></g>'
+        +'<path d="M-22 26 C -62 20 -80 -8 -66 -30 C -52 -12 -30 6 -10 12" fill="none" stroke="'+P.lobDark+'" stroke-width="9" stroke-linecap="round"/>'
+        +'<path d="M22 26 C 62 20 80 -8 66 -30 C 52 -12 30 6 10 12" fill="none" stroke="'+P.lobDark+'" stroke-width="9" stroke-linecap="round"/>'
+        +'<ellipse cx="0" cy="10" rx="27" ry="40" fill="'+P.lob+'"/>'
+        +'<path d="M22 42 C 38 50 40 64 26 70 C 6 70 -2 58 -8 46" fill="'+P.lob+'" stroke="'+P.lobDark+'" stroke-width="2"/>'
+        +'<path d="M-22 42 C -38 50 -40 64 -26 70 C -6 70 2 58 8 46" fill="'+P.lob+'" stroke="'+P.lobDark+'" stroke-width="2"/>'
+        +'</g>';
+      break;
+    case 2: content=pip(70,60)+pip(130,140); break;
+    case 3: content=pip(60,55)+pip(100,100)+pip(140,145); break;
+    case 4: content=pip(60,60)+pip(140,60)+pip(60,140)+pip(140,140); break;
+    case 5: content=pip(55,55)+pip(145,55)+pip(100,100)+pip(55,145)+pip(145,145); break;
+    case 6: content=pip(60,45)+pip(140,45)+pip(60,100)+pip(140,100)+pip(60,155)+pip(140,155); break;
+  }
+  return '<svg viewBox="0 0 200 200" xmlns="http://www.w3.org/2000/svg">'
+    +'<rect x="2" y="2" width="196" height="196" rx="20" fill="'+P.diceBg+'" stroke="'+P.edge+'" stroke-width="3.5"/>'
+    +content+'</svg>';
+}
+
+/* =========================================================
+   UI helpers
+   ========================================================= */
+function $(id){return document.getElementById(id);}
+function esc(s){return String(s).replace(/[&<>"']/g,function(c){return {'&':'&amp;','<':'&lt;','>':'&gt;','"':'&quot;',"'":'&#39;'}[c];});}
+function setBanner(main,sub){ $('banner').innerHTML=esc(main)+(sub?' <small>'+esc(sub)+'</small>':''); }
+function showDice(a,b){ $('d1').innerHTML=dieSVG(a); $('d2').innerHTML=dieSVG(b); $('d1').style.animation=''; $('d2').style.animation=''; }
+
+/* ---------- board ---------- */
+function renderBoard(){
+  var b=$('board'); b.innerHTML='';
+  for(var i=0;i<S.ps.length;i++){
+    var p=S.ps[i]; var d=document.createElement('div');
+    d.className='pcard'+(i===S.cur?' turn':'');
+    var offTxt='';
+    if(i===S.cur && S.pile>0) offTxt='+'+S.pile;
+    d.innerHTML='<div class="nm" style="color:'+p.color+'">'+esc(p.name)+(p.cpu?' <span class="pcpu">🤖</span>':'')+'</div>'
+      +'<div class="sc">'+(p.gotIn?p.score:0)+'</div>'
+      +'<div class="tp">'+esc(offTxt)+'</div>';
+    if(!p.gotIn){ var t=document.createElement('div'); t.className='offtag'; t.textContent='⛔ not in yet'; d.appendChild(t); }
+    b.appendChild(d);
+  }
+}
+
+/* ---------- logs ---------- */
+function addLog(txt,cls){
+  cls=cls||'';
+  S===null?"":S;
+  var d=document.createElement('div');
+  d.innerHTML='<span class="'+(cls?cls:'')+'">'+esc(txt)+'</span>';
+  var h=$('history'); h.appendChild(d); h.scrollTop=h.scrollHeight;
+  var el=h.children;
+  if(h.children.length>80){ h.removeChild(h.firstChild); }
+}
+
+/* ---------- buttons ---------- */
+function controls(roll,bank){ // booleans: show+enable
+  $('rollBtn').classList.toggle('ctrl-hide', roll===null);
+  $('bankBtn').classList.toggle('ctrl-hide', bank===null);
+  if(roll!==null){ $('rollBtn').style.display=''; $('rollBtn').disabled=!roll; }
+  if(bank!==null){ $('bankBtn').style.display=''; $('bankBtn').disabled=!bank; }
+}
+function showNext(){
+  clearCpuTimer();
+  controls(null,null);
+  $('nextbar').classList.add('show');
+  // dice stay visible — show the roll that ended the turn (e.g. the 🦞)
+  var p=S.ps[S.cur];
+  if(p.cpu){
+    setTimeout(function(){
+      if(!S||S.ps[S.cur]!==p) return;
+      if($('winner').classList.contains('on')) return;
+      if(!$('nextbar').classList.contains('show')) return;
+      advanceNext();
+    }, 1300);
+  }
+}
+
+/* ---------- COMPUTER PLAYER ---------- */
+function cpuAct(){
+  if(!S) return;
+  var p=S.ps[S.cur];
+  if(!p || !p.cpu) return;
+  if($('winner').classList.contains('on')) return;
+  if(S.mode!=='turn') return;
+  if(S.lock){ S.cpuTimer=setTimeout(cpuAct,400); return; }
+  var pile=S.pile, entry=S.entry, target=S.target;
+  var wantBank=false;
+  if(S.forced){
+    wantBank=false;                       // doubles: must roll again
+  } else if(!p.gotIn){
+    wantBank = (pile>=entry);             // get in first, then bank
+  } else {
+    var need = Math.max(1, target - p.score);
+    var th = Math.min(20, need);          // classic-pig threshold, capped by what wins
+    wantBank = (pile>=th);
+  }
+  if(wantBank) doBank(); else doRoll();
+}
+
+/* =========================================================
+   State + orchestration
+   ========================================================= */
+var S=null, PLIST=[{name:'Buster',cpu:false},{name:'Caroline',cpu:false},{name:'James',cpu:false}],
+    COLORS=['#e0524f','#4290d4','#66b15e','#b57ee0','#dfa33c','#38b9b4','#dd6f95','#9aa03a','#e06a3c','#71c7e0'];
+
+function beginTurn(){
+  renderBoard();
+  var p=S.ps[S.cur];
+  var sub=p.gotIn?('banked '+p.score+' · target '+S.target):('not in yet — get '+S.entry+' on one turn');
+  $('diceArea').classList.remove('gone');
+  $('nextbar').classList.remove('show');
+  showDice(6,5);
+  S.awaitingReroll=false;
+  if(p.cpu){
+    setBanner('🤖 '+p.name+' is thinking…', sub);
+    addLog('— '+p.name+" (computer) is thinking —",'hl-turn');
+    controls(null,null);
+    S.cpuTimer=setTimeout(cpuAct, 900);
+  } else {
+    setBanner(p.name+', roll the dice!',sub);
+    addLog('— '+p.name+"'s turn —",'hl-turn');
+    controls(true,false);
+  }
+}
+function clearCpuTimer(){ if(S && S.cpuTimer){ clearTimeout(S.cpuTimer); S.cpuTimer=null; } }
+function advanceNext(){
+  clearCpuTimer();
+  LobsterPig.endTurn(S);
+  beginTurn();
+}
+
+/* ---------- ROLL ---------- */
+function doRoll(){
+  if(!S||S.lock)return;
+  S.lock=true;
+  if(!S.ps[S.cur].cpu) controls(false,false);   // humans see disabled buttons; CPU turn keeps them hidden
+  // rattle: flicker pip faces then land
+  var f=0;
+  var flicker=setInterval(function(){
+    showDice(1+Math.floor(Math.random()*6),1+Math.floor(Math.random()*6));
+    if(++f>=5){ clearInterval(flicker); land(); }
+  },70);
+  function land(){
+    var a=1+Math.floor(Math.random()*6), b=1+Math.floor(Math.random()*6);
+    showDice(a,b);
+    $('d1').style.animation='pop .25s ease-out 1';
+    $('d2').style.animation='pop .25s ease-out 1';
+    setTimeout(function(){ $('d1').style.animation=''; $('d2').style.animation=''; },260);
+    var ev=LobsterPig.roll(S,a,b);
+    announce(ev,a,b);
+  }
+}
+function announce(ev,a,b){
+  addLog(a+'+'+b+' → '+ev.message, evTypeClass(ev.type));
+  S.lock=false;
+  renderBoard();
+  if(ev.type==='safe'||ev.type==='doubles'){
+    // stay on turn; bank enabled only if not forced and pile>0
+    // Bank is enabled only when banking is actually legal right now:
+    // not forced (doubles), something to bank, and either already in the game
+    // or this pile is big enough to get in. Grayed out otherwise — same as doubles.
+    var p0=S.ps[S.cur];
+    var banks=(!S.forced && S.pile>0 && (p0.gotIn || S.pile>=S.entry));
+    setBanner(ev.message, ev.sub);
+    var cp=S.ps[S.cur];
+    if(cp && cp.cpu){
+      // computer keeps playing its own turn (human turns never auto-roll)
+      controls(null,null);
+      S.cpuTimer=setTimeout(cpuAct, 950);
+    } else {
+      controls(true, banks);
+    }
+    return;
+  }
+  // bust or double-lob: show next-player gate
+  setBanner(ev.message, ev.sub);
+  showNext();
+}
+function evTypeClass(t){
+  if(t==='lob'||t==='doubleLob')return 'hl-bad';
+  if(t==='doubles')return 'hl-turn';
+  if(t==='win')return 'hl-win';
+  if(t==='bank')return 'hl-sm';
+  return '';
+}
+/* ---------- BANK ---------- */
+function doBank(){
+  if(!S||S.lock)return;
+  var ev=LobsterPig.bank(S);
+  if(ev.type==='refused'){ setBanner(ev.message); shakeBanner(); return; }
+  addLog(ev.message, evTypeClass(ev.type));
+  renderBoard();
+  if(ev.type==='win'){ showWin(S.winner, S.target); return; }
+  setBanner(ev.message,'');
+  showNext();
+}
+function shakeBanner(){
+  var b=$('banner');
+  b.classList.remove('shake');
+  void b.offsetWidth; /* restart animation */
+  b.classList.add('shake');
+}
+/* ---------- WIN ---------- */
+function showWin(p,t){
+  $('winner').classList.add('on');
+  $('winName').textContent=p.name+' wins!';
+  $('winName').style.color=p.color;
+  $('winScore').textContent='Banks in at '+p.score+' (target '+t+'). Claws up! 🦞';
+}
+function resetAll(){ S=null; $('winner').classList.remove('on'); $('game').classList.remove('active');
+  $('setup').style.display='flex'; buildPlayers(); }
+
+/* =========================================================
+   Setup UI
+   ========================================================= */
+function buildPlayers(){
+  var pl=$('plist'); pl.innerHTML='';
+  if(PLIST.length===0)PLIST=[{name:'Buster',cpu:false},{name:'Caroline',cpu:false},{name:'James',cpu:false}];
+  PLIST.forEach(function(n,i){
+    var row=document.createElement('div'); row.className='prow';
+    var dot=document.createElement('div'); dot.className='dot'; dot.style.background=COLORS[i%COLORS.length]; dot.textContent=i+1;
+    var inp=document.createElement('input'); inp.type='text'; inp.value=n.name; inp.maxLength=14;
+    inp.oninput=function(){ PLIST[i].name=inp.value; };
+    var who=document.createElement('button'); who.type='button';
+    who.className='who'+(n.cpu?' cpu':'');
+    who.textContent = n.cpu?'🤖':'👤';
+    who.title = n.cpu?'Computer — tap to make human':'Human — tap to make computer';
+    who.onclick=(function(j){return function(){ PLIST[j].cpu=!PLIST[j].cpu; buildPlayers(); }; })(i);
+    row.appendChild(dot); row.appendChild(inp); row.appendChild(who);
+    if(PLIST.length>2){ var del=document.createElement('button'); del.className='del'; del.textContent='✕';
+      del.onclick=(function(j){return function(){ PLIST.splice(j,1); buildPlayers(); };})(i);
+      row.appendChild(del); }
+    pl.appendChild(row);
+  });
+  $('btnAdd').disabled = PLIST.length>=10;
+}
+function currentPlayers(){
+  var out=[];
+  document.querySelectorAll('#plist .prow').forEach(function(row,i){
+    var inp=row.querySelector('input');
+    var nm=(inp&&inp.value.trim())||('Player '+(i+1));
+    out.push({ name:nm, cpu: !!(PLIST[i]&&PLIST[i].cpu) });
+  });
+  return out;
+}
+
+function startGame(){
+  var players=currentPlayers();
+  if(players.length<2){ alert('Need at least 2 players to start.'); return; }
+  var target=parseInt($('tarScore').value)||100;
+  var entry =parseInt($('entScore').value)||21;
+  if(entry>target)entry=target;
+  // update rules copy
+  document.querySelectorAll('.entryN').forEach(function(e){e.textContent=entry;});
+  document.querySelectorAll('.targetN').forEach(function(e){e.textContent=target;});
+  S=LobsterPig.newGame({names:players.map(function(p){return p.name;}),target:target,entry:entry,colors:COLORS});
+  players.forEach(function(p,i){ S.ps[i].cpu=p.cpu; });
+  $('setup').style.display='none';
+  $('game').classList.add('active');
+  $('history').innerHTML='';
+  beginTurn();
+}
+
+/* =========================================================
+   Wire-up
+   ========================================================= */
+$('btnAdd').addEventListener('click',function(){ var n=$('newName').value.trim(); if(!n)return; PLIST.push({name:n,cpu:false}); $('newName').value=''; buildPlayers(); });
+$('newName').addEventListener('keydown',function(e){ if(e.key==='Enter'){ this.blur(); $('btnAdd').click(); } });
+$('btnStart').addEventListener('click',startGame);
+$('rollBtn').addEventListener('click',doRoll);
+$('bankBtn').addEventListener('click',doBank);
+$('nextBtn').addEventListener('click',advanceNext);
+$('againBtn').addEventListener('click',resetAll);
+$('logBar').addEventListener('click',function(){ var h=$('history'); var open=!h.classList.contains('gone'); h.classList.toggle('gone'); $('logBar').textContent= open?'▸ roll history':'▾ roll history'; });
+window.addEventListener('keydown',function(e){
+  if(!S||!$('game').classList.contains('active'))return;
+  if($('winner').classList.contains('on'))return;
+  if( (e.code==='Space'||e.key===' ') && !$('rollBtn').disabled && !$('rollBtn').classList.contains('ctrl-hide') ){ e.preventDefault(); doRoll(); }
+  else if((e.key==='b'||e.key==='B')&& !$('bankBtn').disabled ){ doBank(); }
+});
+
+/* init: render the default player rows */
+buildPlayers();
+</script>
+</body>
+</html>
