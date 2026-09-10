@@ -135,12 +135,16 @@
   .diebox .spin{display:block;transition:transform .34s cubic-bezier(.22,1.5,.4,1);}
   .diebox svg{width:100%;height:auto;display:block;filter:drop-shadow(0 8px 10px rgba(0,0,0,.4));}
 
-  #controls{display:flex;gap:10px;justify-content:center;width:100%;max-width:460px;}
+  /* Roll/Bank and the Next-player button share ONE grid slot, so swapping between
+     them never changes the height of the stack — the dice stay put and there's no gap. */
+  #dock{display:grid;width:100%;max-width:460px;align-items:center;}
+  #controls,#nextbar{grid-area:1/1;}
+  #controls{display:flex;gap:10px;justify-content:center;width:100%;}
   #rollBtn{flex:2 1 0;font-size:clamp(1.05rem,4.4vw,1.25rem);padding:18px 10px;}
   #bankBtn{flex:1 1 0;font-size:14px;padding:18px 8px;}
   /* These stay in the layout (just invisible) so nothing shifts the dice. */
   .ctrl-hide{visibility:hidden!important;pointer-events:none;}
-  #nextbar{display:flex;visibility:hidden;width:100%;max-width:460px;}
+  #nextbar{display:flex;visibility:hidden;width:100%;}
   #nextbar.show{visibility:visible;}
   #nextBtn{width:100%;font-size:17px;padding:17px;}
 
@@ -276,11 +280,13 @@
         <div class="diebox" id="d2"></div>
       </div>
       <div id="banner"></div>
-      <div id="controls">
-        <button class="btn solid" id="rollBtn">Roll</button>
-        <button class="btn ghost" id="bankBtn">Bank</button>
+      <div id="dock">
+        <div id="controls">
+          <button class="btn solid" id="rollBtn">Roll</button>
+          <button class="btn ghost" id="bankBtn">Bank</button>
+        </div>
+        <div id="nextbar"><button class="btn" id="nextBtn">Next player</button></div>
       </div>
-      <div id="nextbar"><button class="btn" id="nextBtn">Next player</button></div>
     </div>
     <div class="logpanel">
       <button class="bar" id="logBar">▸ roll history</button>
