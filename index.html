@@ -377,15 +377,15 @@ var LobsterPig = (function BP_ENGINE(global){
 /* =========================================================
    Dice artwork
    ========================================================= */
-var P={face:'#f6f1e3',faceEdge:'#d9d0b8',ink:'#16221c',lob:'#e8402a',lobDark:'#a8281a',lobInk:'#7d1c11'};
+var P={face:'#ffffff',faceEdge:'#d9d0b8',ink:'#e8402a',lob:'#e8402a',lobDark:'#a8281a',lobInk:'#7d1c11'};
 function dieSVG(v){
   var isLob=(v===1);
-  var bg   = isLob? P.lob      : P.face;
-  var edge = isLob? P.lobDark  : P.faceEdge;
+  var bg   = P.face;                 // every face is a white die
+  var edge = P.faceEdge;
   function pip(x,y){return '<circle cx="'+x+'" cy="'+y+'" r="20" fill="'+P.ink+'"/>';}
   var content='';
   if(isLob){
-    var body='#f6f1e3', line=P.lobInk;
+    var body=P.lob, line=P.lobDark;   // top-down RED lobster on the white 1-face
     content='<g transform="translate(100,100)">'
       +'<path d="M-6 -58 C -14 -82 -40 -96 -56 -84 C -56 -60 -30 -52 -15 -46 Z" fill="'+body+'" stroke="'+line+'" stroke-width="3"/>'
       +'<path d="M6 -58 C 14 -82 40 -96 56 -84 C 56 -60 30 -52 15 -46 Z" fill="'+body+'" stroke="'+line+'" stroke-width="3"/>'
