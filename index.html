@@ -138,9 +138,10 @@
   #controls{display:flex;gap:10px;justify-content:center;width:100%;max-width:460px;}
   #rollBtn{flex:2 1 0;font-size:clamp(1.05rem,4.4vw,1.25rem);padding:18px 10px;}
   #bankBtn{flex:1 1 0;font-size:14px;padding:18px 8px;}
-  .ctrl-hide{display:none!important;}
-  #nextbar{display:none;width:100%;max-width:460px;}
-  #nextbar.show{display:flex;}
+  /* These stay in the layout (just invisible) so nothing shifts the dice. */
+  .ctrl-hide{visibility:hidden!important;pointer-events:none;}
+  #nextbar{display:flex;visibility:hidden;width:100%;max-width:460px;}
+  #nextbar.show{visibility:visible;}
   #nextBtn{width:100%;font-size:17px;padding:17px;}
 
   .logpanel{width:100%;max-width:520px;margin:0 auto;}
@@ -165,6 +166,10 @@
   #againBtn{min-width:200px;}
 
   @media (min-width:900px){
+    /* While playing, centre the logo over the dice column instead of the whole page.
+       Offset = page padding (14) + player rail (232) + rail gap (22). */
+    body.playing header{max-width:1180px;width:100%;margin:0 auto;box-sizing:border-box;
+      padding-left:268px;padding-right:14px;justify-content:center;}
     #game{flex-direction:row;align-items:stretch;gap:22px;padding-bottom:26px;}
     #board{flex:0 0 232px;flex-direction:column;flex-wrap:nowrap;justify-content:flex-start;align-content:start;gap:9px;}
     .pcard{flex:0 0 auto;width:100%;max-width:none;}
@@ -620,6 +625,7 @@ function resetAll(){
   S=null;
   $('winner').classList.remove('on');
   $('game').classList.remove('active');
+  document.body.classList.remove('playing');
   $('setup').style.display='flex';
   buildPlayers();
 }
@@ -711,6 +717,7 @@ function startGame(){
   players.forEach(function(p,i){ S.ps[i].cpu=p.cpu; });
   $('setup').style.display='none';
   $('game').classList.add('active');
+  document.body.classList.add('playing');
   $('history').innerHTML='';
   beginTurn();
 }
