@@ -1,0 +1,15 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="640" height="640" viewBox="0 0 640 640">
+  <image href="teton-wordmark-red.png" x="70" y="65" width="500" height="300" preserveAspectRatio="none"/>
+  <g fill="#e8402a" font-family="Georgia, 'Times New Roman', serif" font-size="42" text-anchor="middle">
+    <text x="320" y="445" letter-spacing="1.5">Lobster Dice</text>
+  </g>
+  <!-- open lobster pincers framing the wordmark -->
+  <g fill="none" stroke="#e8402a" stroke-width="15" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M132 372 C104 365 78 343 67 316"/>
+    <path d="M67 316 C46 302 35 283 43 266"/>
+    <path d="M67 316 C45 320 30 334 34 351"/>
+    <path d="M508 372 C536 365 562 343 573 316"/>
+    <path d="M573 316 C594 302 605 283 597 266"/>
+    <path d="M573 316 C595 320 610 334 606 351"/>
+  </g>
+</svg>
