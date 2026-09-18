@@ -1,14 +1,17 @@
-<svg xmlns="http://www.w3.org/2000/svg" width="640" height="640" viewBox="0 0 640 640">
-  <image href="teton-wordmark-teton.png" x="70" y="65" width="500" height="245" preserveAspectRatio="none"/>
-  <g fill="#e8402a" font-family="Georgia, 'Times New Roman', serif" font-size="42" text-anchor="middle">
-    <text x="320" y="405" letter-spacing="1.5">Lobster Dice</text>
+<svg xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" width="640" height="640" viewBox="0 0 640 640">
+  <defs>
+    <clipPath id="upper-logo"><rect x="88" y="55" width="464" height="255"/></clipPath>
+  </defs>
+  <rect width="640" height="640" fill="#ffffff"/>
+  <g clip-path="url(#upper-logo)">
+    <image xlink:href="teton-logo-preview-base.svg" x="88" y="42" width="464" height="303" preserveAspectRatio="none"/>
   </g>
-  <g fill="none" stroke="#e8402a" stroke-width="15" stroke-linecap="round" stroke-linejoin="round">
-    <path d="M132 365 C104 358 78 336 67 309"/>
-    <path d="M67 309 C46 295 35 276 43 259"/>
-    <path d="M67 309 C45 313 30 327 34 344"/>
-    <path d="M508 365 C536 358 562 336 573 309"/>
-    <path d="M573 309 C594 295 605 276 597 259"/>
-    <path d="M573 309 C595 313 610 327 606 344"/>
+  <text x="320" y="390" text-anchor="middle" fill="#231f20" font-family="Georgia, 'Times New Roman', serif" font-size="43" letter-spacing="1.2">Lobster Dice</text>
+  <g transform="translate(112 -9) scale(.75)" fill="none" stroke="#e8402a" stroke-width="8" stroke-linecap="round" stroke-linejoin="round">
+    <path d="M435 192 C447 184 459 185 469 193 C476 201 475 212 468 219 C459 227 445 225 437 216 C431 208 430 199 435 192Z" fill="#e8402a"/>
+    <path d="M437 198 L420 188 M438 207 L418 210 M468 199 L486 190 M466 210 L487 216"/>
+    <path d="M441 220 L430 234 M451 222 L448 239 M461 220 L468 235"/>
+    <path d="M438 194 L419 178 M444 191 L427 174"/>
+    <path d="M438 214 C450 220 461 219 469 214" stroke="#ffffff" stroke-width="3"/>
   </g>
 </svg>
