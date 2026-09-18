@@ -7,7 +7,5 @@
   </g>
   <!-- Same all-caps, centered, full-width subtitle treatment as APARTMENT SUMMIT. -->
   <!-- Original subtitle geometry: a small serif line, nearly as wide as TETON, directly below it. -->
-  <g transform="translate(320 0) scale(2.2 1) translate(-320 0)">
-    <text x="320" y="391" text-anchor="middle" fill="#231f20" font-family="FreeSerif, 'Times New Roman', serif" font-size="30" font-weight="400">LOBSTER DICE</text>
-  </g>
+  <text x="320" y="391" text-anchor="middle" fill="#231f20" font-family="FreeSerif, 'Times New Roman', serif" font-size="30" font-weight="400" letter-spacing="24">LOBSTER DICE</text>
 </svg>
