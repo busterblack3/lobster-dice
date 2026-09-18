@@ -6,7 +6,7 @@
   <g clip-path="url(#upper-logo)">
     <image xlink:href="teton-logo-preview-base.svg" x="88" y="42" width="464" height="303" preserveAspectRatio="none"/>
   </g>
-  <text x="320" y="390" text-anchor="middle" fill="#231f20" font-family="Georgia, 'Times New Roman', serif" font-size="43" letter-spacing="1.2">Lobster Dice</text>
+  <text x="320" y="390" text-anchor="middle" fill="#231f20" font-family="Georgia, 'Times New Roman', serif" font-size="39" font-weight="400" letter-spacing="1.8">LOBSTER DICE</text>
   <g transform="translate(112 -9) scale(.75)" fill="none" stroke="#e8402a" stroke-width="8" stroke-linecap="round" stroke-linejoin="round">
     <path d="M435 192 C447 184 459 185 469 193 C476 201 475 212 468 219 C459 227 445 225 437 216 C431 208 430 199 435 192Z" fill="#e8402a"/>
     <path d="M437 198 L420 188 M438 207 L418 210 M468 199 L486 190 M466 210 L487 216"/>
